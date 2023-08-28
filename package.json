@@ -1,0 +1,9 @@
+{
+  "name": "jskeq",
+  "version": "1.0.11",
+  "description": "A script that compare the json keys of two directories or two files.",
+  "bin": {
+    "create": "bin/index.js"
+  },
+  "license": "MIT"
+}
