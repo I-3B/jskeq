@@ -5,5 +5,14 @@
   "bin": {
     "create": "bin/index.js"
   },
+  "repository": "git@github.com:I-3B/jskeq.git",
+  "homepage": "https://github.com/I-3B/jskeq",
+  "keywords": [
+    "javascript",
+    "json",
+    "script",
+    "node"
+  ],
+  "author": "Islam Naasani",
   "license": "MIT"
 }
