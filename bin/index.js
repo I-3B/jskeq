@@ -53,25 +53,32 @@ function processFilesInDirectories(dir1, dir2) {
   const filesDiff = [];
   const files1 = fs.readdirSync(dir1);
   const files2 = fs.readdirSync(dir2);
-
-  files1.forEach((file1) => {
-    const jsonFilePath1 = path.join(dir1, file1);
-    const fileNameWithoutExtension = path.parse(file1).name;
-
-    if (files2.includes(`${fileNameWithoutExtension}.json`)) {
-      const jsonFilePath2 = path.join(dir2, `${fileNameWithoutExtension}.json`);
-      filesDiff.push(compareTwoJson(jsonFilePath1, jsonFilePath2, { includeDirName: true }));
-    }
-  });
-  return filesDiff;
+  const missingFiles2 = files1.filter((file) => !files2.includes(file));
+  const missingFiles1 = files2.filter((file) => !files1.includes(file));
+  files1
+    .filter((file) => files2.includes(file))
+    .forEach((file1) => {
+      const jsonFilePath1 = path.join(dir1, file1);
+      const fileNameWithoutExtension = path.parse(file1).name;
+      if (files2.includes(`${fileNameWithoutExtension}.json`)) {
+        const jsonFilePath2 = path.join(dir2, `${fileNameWithoutExtension}.json`);
+        filesDiff.push(compareTwoJson(jsonFilePath1, jsonFilePath2, { includeDirName: true }));
+      }
+    });
+  return [
+    filesDiff,
+    { name: path.basename(dir1), missingFiles: missingFiles1 },
+    { name: path.basename(dir2), missingFiles: missingFiles2 },
+  ];
 }
 function printTwoFilesDiff(diffs) {
   diffs.forEach((diff) => {
     if (diff.have.length !== 0) {
-      console.log(WARNING, `\n${diff.name}.json have ${diff.have.length} more keys:`);
+      console.log(WARNING, `${diff.name}.json have ${diff.have.length} more keys:`);
       diff.have.forEach((key) => {
         console.log(`${key}`);
       });
+      console.log();
     }
   });
 }
@@ -84,7 +91,16 @@ if (!arg1 || !arg2) {
 const arg1Stats = fs.statSync(arg1);
 const arg2Stats = fs.statSync(arg2);
 if (arg1Stats.isDirectory() && arg2Stats.isDirectory()) {
-  const diff = processFilesInDirectories(arg1, arg2);
+  const [diff, ...missingFilesByDirectory] = processFilesInDirectories(arg1, arg2);
+  missingFilesByDirectory.forEach((directory) => {
+    if (directory.missingFiles !== 0) {
+      console.log(ERROR, `${directory.name} is missing the following files:`);
+      directory.missingFiles.forEach((file) => {
+        console.log(file);
+      });
+      console.log();
+    }
+  });
   const isAllFilesEqual = diff.every(
     ([file1, file2]) => file1.have.length === 0 && file2.have.length === 0
   );
