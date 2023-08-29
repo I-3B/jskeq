@@ -93,7 +93,7 @@ const arg2Stats = fs.statSync(arg2);
 if (arg1Stats.isDirectory() && arg2Stats.isDirectory()) {
   const [diff, ...missingFilesByDirectory] = processFilesInDirectories(arg1, arg2);
   missingFilesByDirectory.forEach((directory) => {
-    if (directory.missingFiles !== 0) {
+    if (directory.missingFiles.length !== 0) {
       console.log(ERROR, `${directory.name} is missing the following files:`);
       directory.missingFiles.forEach((file) => {
         console.log(file);

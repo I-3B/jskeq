@@ -1,6 +1,6 @@
 {
   "name": "jskeq",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A script that compare the json keys of two directories or two files.",
   "bin": {
     "create": "bin/index.js"
